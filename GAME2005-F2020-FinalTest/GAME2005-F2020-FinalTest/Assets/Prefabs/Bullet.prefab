@@ -40,7 +40,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2898771445226466676}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &4103796281782616914
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -94,8 +94,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb26199208f309242b07df29a9ab821e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 5
   direction: {x: 0, y: 0, z: 0}
   range: 20
   radius: 0.05
-  debug: 0
+  debug: 1
+  isColliding: 0
+  collisionNormal: {x: 0, y: 0, z: 0}
+  penetration: 0
+  size: {x: 0, y: 0, z: 0}
+  max: {x: 0, y: 0, z: 0}
+  min: {x: 0, y: 0, z: 0}
+  bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  bulletManager: {fileID: 0}

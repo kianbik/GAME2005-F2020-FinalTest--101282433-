@@ -14,21 +14,34 @@ public class BulletBehaviour : MonoBehaviour
     public Vector3 collisionNormal;
     public float penetration;
 
+
+    public Vector3 size;
+    public Vector3 max;
+    public Vector3 min;
+    private MeshFilter meshFilter;
+    public Bounds bounds;
+
     public BulletManager bulletManager;
 
     // Start is called before the first frame update
     void Start()
     {
         isColliding = false;
-        radius = Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z) * 0.5f;
+        meshFilter = GetComponent<MeshFilter>();
+        debug = true;
+        bounds = meshFilter.mesh.bounds;
+        size = bounds.size;
         bulletManager = FindObjectOfType<BulletManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        max = Vector3.Scale(bounds.max, transform.localScale) + transform.position;
+        min = Vector3.Scale(bounds.min, transform.localScale) + transform.position;
         _Move();
         _CheckBounds();
+        
     }
 
     private void _Move()
@@ -48,9 +61,7 @@ public class BulletBehaviour : MonoBehaviour
     {
         if (debug)
         {
-            Gizmos.color = Color.magenta;
-
-            Gizmos.DrawWireSphere(transform.position, radius);
+           
         }
     }
 }

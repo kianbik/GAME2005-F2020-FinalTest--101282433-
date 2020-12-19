@@ -77,15 +77,14 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void _Fire()
     {
-        if (Input.GetAxisRaw("Fire1") > 0.0f)
+        if (Input.GetMouseButtonDown(0))
         {
             // delays firing
-            if (Time.frameCount % fireRate == 0)
-            {
+           
 
                 var tempBullet = bulletManager.GetBullet(bulletSpawn.position, bulletSpawn.forward);
                 tempBullet.transform.SetParent(bulletManager.gameObject.transform);
-            }
+           
         }
     }
 
