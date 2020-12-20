@@ -8,7 +8,7 @@ public class CollisionManager : MonoBehaviour
 {
     public CubeBehaviour[] cubes;
     public BulletBehaviour[] spheres;
-
+    public PlayerBehaviour player;
     private static Vector3[] faces;
 
     // Start is called before the first frame update
@@ -50,7 +50,7 @@ public class CollisionManager : MonoBehaviour
                 {
                     CheckSphereAABB(sphere, cube);
                 }
-                
+
             }
         }
 
@@ -98,12 +98,12 @@ public class CollisionManager : MonoBehaviour
             s.collisionNormal = face;
             //s.isColliding = true;
 
-            
+
             Reflect(s);
         }
 
     }
-    
+
     // This helper function reflects the bullet when it hits an AABB face
     private static void Reflect(BulletBehaviour s)
     {
@@ -122,22 +122,22 @@ public class CollisionManager : MonoBehaviour
     }
 
 
-    public static void CheckAABBs(CubeBehaviour a, CubeBehaviour b)
+    public static void CheckAABBs(CubeBehaviour p, CubeBehaviour b)
     {
         Contact contactB = new Contact(b);
 
-        if ((a.min.x <= b.max.x && a.max.x >= b.min.x) &&
-            (a.min.y <= b.max.y && a.max.y >= b.min.y) &&
-            (a.min.z <= b.max.z && a.max.z >= b.min.z))
+        if ((p.min.x <= b.max.x && p.max.x >= b.min.x) &&
+            (p.min.y <= b.max.y && p.max.y >= b.min.y) &&
+            (p.min.z <= b.max.z && p.max.z >= b.min.z))
         {
             // determine the distances between the contact extents
             float[] distances = {
-                (b.max.x - a.min.x),
-                (a.max.x - b.min.x),
-                (b.max.y - a.min.y),
-                (a.max.y - b.min.y),
-                (b.max.z - a.min.z),
-                (a.max.z - b.min.z)
+                (b.max.x - p.min.x),
+                (p.max.x - b.min.x),
+                (b.max.y - p.min.y),
+                (p.max.y - b.min.y),
+                (b.max.z - p.min.z),
+                (p.max.z - b.min.z)
             };
 
             float penetration = float.MaxValue;
@@ -153,51 +153,91 @@ public class CollisionManager : MonoBehaviour
                     face = faces[i];
                 }
             }
-            
+
             // set the contact properties
             contactB.face = face;
             contactB.penetration = penetration;
 
 
             // check if contact does not exist
-            if (!a.contacts.Contains(contactB))
+            if (!p.contacts.Contains(contactB))
             {
-                // remove any contact that matches the name but not other parameters
-                for (int i = a.contacts.Count - 1; i > -1; i--)
-                {
-                    if (a.contacts[i].cube.name.Equals(contactB.cube.name))
-                    {
-                        a.contacts.RemoveAt(i);
-                    }
-                }
+          // remove any contact that matches the name but not other parameters
+          for (int i = p.contacts.Count - 1; i > -1; i--)
+          {
+              if (p.contacts[i].cube.name.Equals(contactB.cube.name))
+              {
+                  p.contacts.RemoveAt(i);
+              }
+          }
 
-                if (contactB.face == Vector3.down)
-                {
-                    a.gameObject.GetComponent<RigidBody3D>().Stop();
-                    a.isGrounded = true;
-                }
-                
+          if (contactB.face == Vector3.down)
+          {
+              p.gameObject.GetComponent<RigidBody3D>().Stop();
+              p.isGrounded = true;
+          }
 
-                // add the new contact
-                a.contacts.Add(contactB);
-                a.isColliding = true;
-                
+          else
+          {
+              if (b.gameObject.GetComponent<RigidBody3D>().bodyType == BodyType.DYNAMIC)
+              {
+
+         if (contactB.face == Vector3.forward)
+         {
+             b.transform.position = new Vector3(b.transform.position.x, b.transform.position.y, b.transform.position.z + contactB.penetration);
+             b.isGrounded = true;
+             p.isGrounded = true;
+             p.isColliding = true;
+
+         }
+         if (contactB.face == Vector3.back)
+         {
+             b.transform.position = new Vector3(b.transform.position.x, b.transform.position.y, b.transform.position.z - contactB.penetration);
+             b.isGrounded = true;
+             p.isGrounded = true;
+             p.isColliding = true;
+         }
+         if (contactB.face == Vector3.right)
+         {
+             b.transform.position = new Vector3(b.transform.position.x + contactB.penetration, b.transform.position.y, b.transform.position.z);
+             b.isGrounded = true;
+             p.isGrounded = true;
+             p.isColliding = true;
+         }
+         if (contactB.face == Vector3.left)
+         {
+             b.transform.position = new Vector3(b.transform.position.x - contactB.penetration, b.transform.position.y, b.transform.position.z);
+
+             b.isGrounded = true;
+             p.isGrounded = true;
+             p.isColliding = true;
+         }
+                            }
+
+                }
+               
+     
+                p.isColliding = true;
+               
             }
         }
         else
         {
 
-            if (a.contacts.Exists(x => x.cube.gameObject.name == b.gameObject.name))
+            if (p.contacts.Exists(x => x.cube.gameObject.name == b.gameObject.name))
             {
-                a.contacts.Remove(a.contacts.Find(x => x.cube.gameObject.name.Equals(b.gameObject.name)));
-                a.isColliding = false;
-
-                if (a.gameObject.GetComponent<RigidBody3D>().bodyType == BodyType.DYNAMIC)
+                p.contacts.Remove(p.contacts.Find(x => x.cube.gameObject.name.Equals(b.gameObject.name)));
+                p.isColliding = false;
+               
+                if (p.gameObject.GetComponent<RigidBody3D>().bodyType == BodyType.DYNAMIC)
                 {
-                    a.gameObject.GetComponent<RigidBody3D>().isFalling = true;
-                    a.isGrounded = false;
+                    p.gameObject.GetComponent<RigidBody3D>().isFalling = true;
+                    p.isGrounded = false;
                 }
             }
         }
     }
+
+
+
 }
